@@ -17,19 +17,28 @@ This project provides two alternative approaches to clustering HTML documents:
    - Converts similarity scores into distances.
    - Clusters documents using Agglomerative Clustering with a precomputed distance matrix.
 
-The output will display groups of HTML files (e.g., `[A.html, B.html], [C.html], [D.html, E.html, F.html]`) indicating which documents are similar.
+The output will display groups of HTML files indicating which documents are similar.
 
 ## Features
 
 - **Recursive Directory Processing:** Handles subdirectories and processes all HTML files found.
 - **Flexible Similarity Measures:** Choose between a text-based (TF-IDF) approach or a structural approach using `html-similarity`.
-- **Configurable Clustering:** Easily adjust clustering parameters (e.g., DBSCAN’s `eps` or the similarity threshold for Agglomerative Clustering).
+- **Configurable Clustering:** Easily adjust clustering parameters 
 - **Scalable Design:** Although designed for small datasets, the code structure allows adaptation for larger datasets.
+
 
 ## Installation
 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/HTML-Clustering.git
-   cd HTML-Clustering 
+   git clone https://github.com/IoanaP0711/HTML_clone.git
+2. **Navigate Computer to the cloned Repository:**
+
+   ```bash
+   cd GitHub/HTML_code
+
+3. **Run the Python Code:**
+
+   ```bash
+   python cluster_html.py clones/tier4

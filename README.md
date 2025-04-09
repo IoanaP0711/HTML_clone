@@ -32,4 +32,5 @@ The output will display groups of HTML files (e.g., `[A.html, B.html], [C.html],
 
    ```bash
    git clone https://github.com/yourusername/HTML-Clustering.git
-   cd HTML-Clustering 
+   cd HTML_code
+   python cluster_html.py clones/tier4

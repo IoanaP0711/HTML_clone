@@ -5,23 +5,17 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import DBSCAN
 
 def extract_visible_text(html_content):
-    """
-    Extract visible text from HTML content.
-    Removes script, style, and noscript tags, then returns the cleaned text.
-    """
+    
     soup = BeautifulSoup(html_content, "lxml")
-    # Remove unnecessary tags
+    
     for tag in soup(["script", "style", "noscript"]):
         tag.decompose()
-    # Extract and clean text
+   
     text = soup.get_text(separator=" ")
     return " ".join(text.split())
 
 def load_documents_from_directory(directory):
-    """
-    Walks through a directory and loads HTML files.
-    Returns a list of tuples: (filename, text extracted from HTML).
-    """
+    
     documents = []
     for root, _, files in os.walk(directory):
         for filename in files:
@@ -37,40 +31,25 @@ def load_documents_from_directory(directory):
     return documents
 
 def vectorize_documents(doc_texts):
-    """
-    Converts a list of document texts into TF-IDF vectors.
-    Uses English stop-words to reduce noise.
-    """
+    
     vectorizer = TfidfVectorizer(stop_words='english')
     vectors = vectorizer.fit_transform(doc_texts)
     return vectors
 
 def cluster_documents(vectors, eps=0.3, min_samples=2):
-    """
-    Clusters documents based on cosine distance using DBSCAN.
-    Parameters:
-        eps: Maximum cosine distance for points to be considered in the same neighborhood.
-        min_samples: The minimum number of documents to form a cluster.
-    """
+
     clustering = DBSCAN(eps=eps, min_samples=min_samples, metric='cosine')
     clustering.fit(vectors)
     return clustering.labels_
 
 def group_documents_by_cluster(file_names, cluster_labels):
-    """
-    Groups document file names by their assigned DBSCAN cluster labels.
-    Documents labeled as -1 are considered outliers (unique pages).
-    """
     groups = {}
     for file_name, label in zip(file_names, cluster_labels):
         groups.setdefault(label, []).append(file_name)
     return groups
 
 def main(directory):
-    """
-    Main pipeline function.
-    Processes the HTML files found under 'directory', clusters them, and prints the output groups.
-    """
+    
     # Load and process HTML files
     documents = load_documents_from_directory(directory)
     if not documents:

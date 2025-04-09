@@ -1,0 +1,33 @@
+HTML-Similarity Clustering: Reasoning Behind the Code
+
+Overview:
+-----------
+Creating a compact algorithm that works efficiently and without much effort.
+
+Key Design Decisions:
+-------------------------
+1. Use of html-similarity:
+   - Because I only have a general idea when it comes to Python and Machine Learning, I've decided to search ways of how it could be effective to create such an alogorithm, in order for me to also use what I already known.
+
+2. File Loading and Processing:
+   - The code walks through the given directory (and its subdirectories) to load all HTML and HTM files.
+   
+3. Agglomerative Clustering:
+   -I've decided to use Agglomerative Clustering from scikit-learn with the precomputed distance matrix, because it is a simple and efficient method for hierarchical clustering.Apart from that, it is what I've already known to use from my Machine Learning course.
+   - The algorithm does not require to define the number of clusters in advance.
+  
+6. Output Grouping:
+   - After clustering, documents are grouped by their cluster labels.
+   - Each group is output as a list of file paths, which may look like: [A.html, B.html], [C.html], [D.html, E.html, F.html].
+   - Outlier documents (which do not cluster with others) are either assigned their own cluster or marked as unique/outliers.
+
+7. Reasoning for choosing this project:
+   - I've chosen to do this project, because, to be fair, I wanted to put in use what I've already known, along with my own curiosity regarding how this could be done.
+
+Conclusion:
+------------
+This implementation is tailored for comparing HTML files based on their structural properties. By using html-similarity, it is captured the visual and layout-based similarities that might be missed by text-only approaches. The choice of Agglomerative Clustering with a distance threshold gives the flexibility in managing clusters without needing a predetermined number of clusters.
+
+The reasoning behind each part of the code ensures that the solution is robust, scalable (for moderate dataset sizes), and aligned with the objective of grouping similar HTML documents in a way that reflects their rendered appearance.
+
+This document is meant to explain the rationale behind the design decisions in 'alternative_cluster_html.py'.

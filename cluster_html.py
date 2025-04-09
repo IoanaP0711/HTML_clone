@@ -1,72 +1,66 @@
 import os
 import sys
-from bs4 import BeautifulSoup
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import DBSCAN
+import numpy as np
+from sklearn.cluster import AgglomerativeClustering
+from html_similarity import similarity
 
-def extract_visible_text(html_content):
-    
-    soup = BeautifulSoup(html_content, "lxml")
-    
-    for tag in soup(["script", "style", "noscript"]):
-        tag.decompose()
-   
-    text = soup.get_text(separator=" ")
-    return " ".join(text.split())
-
-def load_documents_from_directory(directory):
+def load_html_documents(directory):
     
     documents = []
     for root, _, files in os.walk(directory):
-        for filename in files:
-            if filename.lower().endswith(('.html', '.htm')):
-                filepath = os.path.join(root, filename)
+        for file in files:
+            if file.lower().endswith(('.html', '.htm')):
+                filepath = os.path.join(root, file)
                 try:
-                    with open(filepath, 'r', encoding='utf-8', errors='ignore') as file:
-                        html_content = file.read()
-                        text = extract_visible_text(html_content)
-                        documents.append((filepath, text))
+                    with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                        html_content = f.read()
+                        documents.append((filepath, html_content))
                 except Exception as e:
-                    print(f"Error processing {filepath}: {e}")
+                    print(f"Error reading {filepath}: {e}")
     return documents
 
-def vectorize_documents(doc_texts):
+def compute_similarity_matrix(html_contents):
+    n = len(html_contents)
+    sim_matrix = np.zeros((n, n))
     
-    vectorizer = TfidfVectorizer(stop_words='english')
-    vectors = vectorizer.fit_transform(doc_texts)
-    return vectors
+    for i in range(n):
+        for j in range(i, n):
+            if i == j:
+                sim = 1.0
+            else:
+                sim = similarity(html_contents[i], html_contents[j])
+            sim_matrix[i, j] = sim
+            sim_matrix[j, i] = sim  
+    return sim_matrix
 
-def cluster_documents(vectors, eps=0.3, min_samples=2):
-
-    clustering = DBSCAN(eps=eps, min_samples=min_samples, metric='cosine')
-    clustering.fit(vectors)
+def cluster_documents(sim_matrix, similarity_threshold=0.8):
+    distance_matrix = 1 - sim_matrix
+    clustering = AgglomerativeClustering(
+        n_clusters=None,
+        affinity='precomputed',
+        linkage='average',
+        distance_threshold=1 - similarity_threshold
+    )
+    clustering.fit(distance_matrix)
     return clustering.labels_
 
-def group_documents_by_cluster(file_names, cluster_labels):
-    groups = {}
-    for file_name, label in zip(file_names, cluster_labels):
-        groups.setdefault(label, []).append(file_name)
-    return groups
+def group_documents_by_cluster(file_paths, cluster_labels):
+    clusters = {}
+    for file_path, label in zip(file_paths, cluster_labels):
+        clusters.setdefault(label, []).append(file_path)
+    return clusters
 
 def main(directory):
-    
-    # Load and process HTML files
-    documents = load_documents_from_directory(directory)
+    documents = load_html_documents(directory)
     if not documents:
-        print("No HTML documents found in:", directory)
+        print("No HTML documents found in directory:", directory)
         return
-
-    file_names, doc_texts = zip(*documents)
+    file_paths, html_contents = zip(*documents)
+    sim_matrix = compute_similarity_matrix(html_contents)
+    labels = cluster_documents(sim_matrix, similarity_threshold=0.8)
     
-    # Convert documents to TF-IDF vectors
-    vectors = vectorize_documents(doc_texts)
-    
-    # Cluster documents using DBSCAN with cosine similarity
-    cluster_labels = cluster_documents(vectors, eps=0.3, min_samples=2)
-    
-    # Group files by clusters and print results
-    groups = group_documents_by_cluster(file_names, cluster_labels)
-    for label, files in groups.items():
+    clusters = group_documents_by_cluster(file_paths, labels)
+    for label, files in clusters.items():
         cluster_name = f"Cluster {label}" if label != -1 else "Unique / Outlier"
         print(f"{cluster_name}:")
         for f in files:
@@ -74,8 +68,7 @@ def main(directory):
         print()
 
 if __name__ == "__main__":
-    # The script expects the path to a subdirectory containing the HTML files.
-    if len(sys.argv) < 2:
-        print("Usage: python cluster_html.py <directory_path>")
+    if len(sys.argv) != 2:
+        print("Usage: python alternative_cluster_html.py <directory_path>")
     else:
         main(sys.argv[1])

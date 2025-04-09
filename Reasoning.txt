@@ -2,7 +2,7 @@ HTML-Similarity Clustering: Reasoning Behind the Code
 
 Overview:
 -----------
-Creating a compact algorithm that works efficiently and without much effort.
+Creating a compact algorithm that works efficiently and without much effort, regarding grouping clones of html files. In order for it to be efficent and reliable, Python along with cluster method from Machine Learning was used.
 
 Key Design Decisions:
 -------------------------
@@ -23,6 +23,7 @@ Key Design Decisions:
 
 7. Reasoning for choosing this project:
    - I've chosen to do this project, because, to be fair, I wanted to put in use what I've already known, along with my own curiosity regarding how this could be done.
+   - I've decided the put the Reasoning in a separate .txt file, in order for the README.md file to be cleaner.
 
 Conclusion:
 ------------
